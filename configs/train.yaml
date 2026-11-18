@@ -1,0 +1,153 @@
+# ==========================================================
+# AdvSkillGuard Configuration File
+# ==========================================================
+
+# ----------------------------------------------------------
+# 模型配置
+# ----------------------------------------------------------
+model:
+  attacker_model: "Qwen/Qwen2.5-7B-Instruct"
+  defender_model: "Qwen/Qwen2.5-7B-Instruct"
+
+  attacker_prompt: "prompts/attacker_prompt.txt"
+  defender_prompt: "prompts/defender_prompt.txt"
+
+  max_length: 4096
+  max_new_tokens: 1024
+
+  fp16: true
+
+# ----------------------------------------------------------
+# 数据集配置
+# ----------------------------------------------------------
+data:
+  train_file: "data/processed/train_sft.jsonl"
+  valid_file: "data/processed/valid_sft.jsonl"
+  test_file: "data/processed/test.jsonl"
+
+  malicious_file: "data/processed/malicious_samples.jsonl"
+
+  raw_skill_dir: "data/raw"
+  processed_dir: "data/processed"
+
+# ----------------------------------------------------------
+# 初始防御模型训练配置
+# ----------------------------------------------------------
+sft_training:
+  batch_size: 1
+
+  epochs: 3
+
+  learning_rate: 5.0e-5
+
+  gradient_accumulation_steps: 8
+
+  warmup_ratio: 0.03
+
+  max_grad_norm: 1.0
+
+  alpha: 0.7
+
+  save_steps: 500
+
+  log_steps: 20
+
+  output_dir: "experiments/checkpoints/defender_init"
+
+# ----------------------------------------------------------
+# 攻击侧 Context-Bridging 配置
+# ----------------------------------------------------------
+attack:
+  top_k_patterns: 20
+
+  candidates_per_strategy: 2
+
+  temperature: 0.8
+
+  top_p: 0.9
+
+# ----------------------------------------------------------
+# 功能保持验证器配置
+# ----------------------------------------------------------
+validator:
+  overlap_threshold: 0.6
+
+  min_required_actions: 1
+
+# ----------------------------------------------------------
+# Replay Buffer 配置
+# ----------------------------------------------------------
+replay_buffer:
+  max_size: 10000
+
+  save_path: "experiments/adversarial/replay_buffer.jsonl"
+
+# ----------------------------------------------------------
+# 对抗训练配置
+# ----------------------------------------------------------
+adversarial_training:
+
+  max_rounds: 10
+
+  evasion_threshold: 0.05
+
+  history_sample_ratio: 0.20
+
+  init_sample_ratio: 0.20
+
+  incremental_steps: 200
+
+  save_each_round: true
+
+  save_dir: "experiments/adversarial"
+
+# ----------------------------------------------------------
+# 停止条件配置
+# ----------------------------------------------------------
+stopping:
+
+  patience: 5
+
+  min_improvement: 0.005
+
+# ----------------------------------------------------------
+# GRPO攻击优化配置
+# ----------------------------------------------------------
+grpo:
+
+  group_size: 8
+
+  epochs: 3
+
+  learning_rate: 1.0e-6
+
+  beta_kl: 0.02
+
+  clip_eps: 0.20
+
+  success_weight: 2.0
+
+  entropy_coef_max: 0.05
+
+  temperature: 0.8
+
+  top_p: 0.9
+
+  output_dir: "experiments/checkpoints/attacker_grpo"
+
+# ----------------------------------------------------------
+# 实验评估配置
+# ----------------------------------------------------------
+evaluation:
+
+  pred_save_path: "experiments/predictions"
+
+  report_save_path: "experiments/reports"
+
+  realworld_root: "data/realworld"
+
+# ----------------------------------------------------------
+# 随机种子配置
+# ----------------------------------------------------------
+seed:
+  value: 42
